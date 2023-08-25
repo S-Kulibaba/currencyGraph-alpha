@@ -1,0 +1,48 @@
+<!DOCTYPE html >
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <title>Exchange Rates</title>
+</head>
+<body class="h-screen bg-custom-blue flex items-center justify-center">
+
+    <div class="container relative bg-white my-7 mx-8 rounded-3xl overflow-hidden transition duration-600 ease-out shadow">
+        <div class="title-box flex items-center justify-center mt-4 text-custom-blue">
+            <div class="flag">
+                <img src="/img/flag-united-states_1f1fa-1f1f8.png" alt="US">
+            </div>
+            <div class="title-name">Курс Американского доллара (USD) к:</div>
+        </div>
+        <div class="currency-box-first flex items-center justify-between  my-5 mx-8">
+            <div id="btn-eur" class="currency-box-btn flex items-center justify-center rounded-3xl border border-solid border-custom-blue cursor-pointer">
+                <div class="flag">
+                    <img src="/img/flag-european-union_1f1ea-1f1fa.png" alt="EU">
+                </div>
+                <div class="currency-box__currency text-custom-blue">Евро (EUR)</div>
+            </div>
+            <div id="btn-uah" class="currency-box-btn flex items-center justify-center rounded-3xl border border-solid border-custom-blue cursor-pointer">
+                <div class="flag">
+                    <img src="/img/flag-ukraine_1f1fa-1f1e6.png" alt="UKR">
+                </div>
+                <div class="currency-box__currency text-custom-blue">Украинская гривна (UAH)</div>
+            </div>
+        </div>
+        <div class="currency-box-second currency-box-first flex items-center justify-center">
+            <div id="btn-huf" class="currency-box-btn flex items-center justify-center rounded-3xl border border-solid border-custom-blue cursor-pointer">
+                <div class="flag">
+                    <img src="/img/flag-hungary_1f1ed-1f1fa.png" alt="HUN">
+                </div>
+                <div class="currency-box__currency text-custom-blue">Венгерский форинт (HUF)</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/index.js"></script>
+</body>
+</html>
