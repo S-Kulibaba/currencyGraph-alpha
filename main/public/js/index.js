@@ -70,7 +70,7 @@ document.getElementById("btn-huf").addEventListener("click", function () {
 
 // Chart func
 
-function createChart(dataArray, container) {
+function createChart(dataArray, dataDate, container) {
   // canvas elem
   const canvas = document.createElement('canvas');
   container.appendChild(canvas);
@@ -80,7 +80,7 @@ function createChart(dataArray, container) {
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['24.08', '25.08', '26.08'],
+      labels: dataDate,
       datasets: [
         {
           label: 'Currency Rates',
@@ -115,13 +115,25 @@ function funcUpd(currencyId) {
     targetCurrency = 'HUF';
   }
 
+  const currentDate = new Date();
+
+  function addLeadingZero(num) {
+    return num < 10 ? `0${num}` : num;
+  }
+
+  const formattedDate = `${addLeadingZero(currentDate.getDate())}-${addLeadingZero(currentDate.getMonth() + 1)}-${currentDate.getFullYear().toString().slice(-2)}`;
+
   return fetch(LINK)
     .then(response => response.json())
     .then(data => {
       const currentRate = data.rates[targetCurrency];
       RATENUM.textContent = `Today 1 USD = ${currentRate} ${targetCurrency}`;
 
-      const jsonData = JSON.stringify({ currencyId, currentRate }); //json
+      const jsonData = JSON.stringify({
+        currencyId,
+        currentRate,
+        currentDate: formattedDate
+      });
       const blob = new Blob([jsonData], { type: 'application/json' });
 
       const formData = new FormData();
@@ -136,10 +148,11 @@ function funcUpd(currencyId) {
     .then(response => response.json()) // server answer
     .then(serverResponse => {
       const dataArray = Object.values(serverResponse.rates); // Transform the rates object into an array
+      const dataDate = Object.values(serverResponse.dates);
       console.log('Server Response as Array:', dataArray);
 
       // chart creating
-      createChart(dataArray, RATENUM.parentElement);
+      createChart(dataArray, dataDate, RATENUM.parentElement);
     })
     .catch(error => console.error(error));
 }

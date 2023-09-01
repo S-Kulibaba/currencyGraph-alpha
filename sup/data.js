@@ -32,30 +32,31 @@ app.post('/upload/:currencyId', upload.single('file'), (req, res) => {
 
   const currencyId = req.params.currencyId;
 
-  // array from currentRate for currency
-  function getCurrencyRates() {
+  // Arrays for rates and dates
+  const rates = [];
+  const dates = [];
+
+  function getCurrencyData() {
     const currencyPath = path.join(__dirname, `uploads/${currencyId}`);
     const files = fs.readdirSync(currencyPath);
-
-    const rates = [];
 
     files.forEach(file => {
       const filePath = path.join(currencyPath, file);
       const fileData = fs.readFileSync(filePath, 'utf-8');
       const jsonData = JSON.parse(fileData);
 
-      if (jsonData.hasOwnProperty('currentRate')) {
+      if (jsonData.hasOwnProperty('currentRate') && jsonData.hasOwnProperty('currentDate')) {
         rates.push(jsonData.currentRate);
+        dates.push(jsonData.currentDate);
       }
     });
-
-    return rates;
   }
 
-  const rates = getCurrencyRates(); // creating array currentRate
+  getCurrencyData(); // Fill rates and dates arrays
   console.log(`${currencyId} Rates:`, rates);
+  console.log(`${currencyId} Dates:`, dates);
 
-  res.status(200).json({ rates }); // array like answer for post
+  res.status(200).json({ rates, dates }); // Include both rates and dates in the response
 });
 
 app.listen(port, () => {
