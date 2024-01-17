@@ -76,6 +76,16 @@ function funcUpd() {
         else if (currencyId === "HUF") {
             currentRate = data.rates.HUF;
         }
+
+        const currentDate = new Date().toISOString().split('T')[0];
+
+        const jsonData = JSON.stringify({
+            currencyId,
+            currentRate,
+            currentDate
+        });
+        
+        console.log(jsonData);
       RATENUM.textContent = `Today 1 USD = ${currentRate} ${currencyId}`;
       return currentRate;
     })
