@@ -121,7 +121,7 @@ function funcUpd(currencyId) {
     return num < 10 ? `0${num}` : num;
   }
 
-  const formattedDate = `${addLeadingZero(currentDate.getDate())}-${addLeadingZero(currentDate.getMonth() + 1)}-${currentDate.getFullYear().toString().slice(-2)}`;
+  const formattedDate = `${currentDate.getFullYear().toString().slice(-2)}-${addLeadingZero(currentDate.getMonth() + 1)}-${addLeadingZero(currentDate.getDate())}`;
 
   return fetch(LINK)
     .then(response => response.json())

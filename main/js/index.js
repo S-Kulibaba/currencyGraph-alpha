@@ -1,6 +1,6 @@
 // Function to handle the click event on currency containers
-
 let counter = 0;
+let currencyId;
 
 function handleCurrencyClick(currencyId) {
   counter++;
@@ -21,7 +21,7 @@ function handleCurrencyClick(currencyId) {
   const ratesNum = document.createElement("div"); // Создаем вложенный div элемент
   newContainer.appendChild(ratesNum); // Добавляем вложенный div внутрь newContainer
   ratesNum.classList.add("rates-num");
-  ratesNum.id = "rate-num-uah";
+  ratesNum.id = "rate-num-curr";
 
   return new Promise(resolve => {
     setTimeout(() => {
@@ -32,68 +32,52 @@ function handleCurrencyClick(currencyId) {
 
 // Add event listeners to currency containers
 document.getElementById("btn-eur").addEventListener("click", function () {
-  if (counter == 0) {
-    handleCurrencyClick("eur").then(funcUpd);;
-  }
+    if (counter == 0) {
+        handleCurrencyClick("eur").then(() => {
+            currencyId = "EUR";
+            funcUpd();
+        });
+    }
 });
 
 document.getElementById("btn-uah").addEventListener("click", function () {
-  if (counter == 0) {
-    handleCurrencyClick("uah").then(funcUpd);;
-  }
+    if (counter == 0) {
+        handleCurrencyClick("uah").then(() => {
+            currencyId = "UAH";
+            funcUpd();
+        });
+    }
 });
 
 document.getElementById("btn-huf").addEventListener("click", function () {
   if (counter == 0) {
-    handleCurrencyClick("huf").then(funcUpd);;
-  }
+    handleCurrencyClick("huf").then(() => {
+        currencyId = "HUF";
+        funcUpd();
+    });
+    }
 });
 
 // Rates (string at left corner)
 
 const LINK = 'https://api.exchangerate-api.com/v4/latest/USD';
 function funcUpd() {
-  const RATENUM = document.getElementById('rate-num-uah'); // Получаем элемент здесь
+  const RATENUM = document.getElementById('rate-num-curr'); // Получаем элемент здесь
 
   return fetch(LINK)
     .then(response => response.json())
     .then(data => {
-      currentRate = data.rates.UAH;
-      RATENUM.textContent = `Today 1 USD = ${currentRate} UAH`;
+        if (currencyId === "EUR") {
+            currentRate = data.rates.EUR;
+        }
+        else if (currencyId === "UAH") {
+            currentRate = data.rates.UAH;
+        }
+        else if (currencyId === "HUF") {
+            currentRate = data.rates.HUF;
+        }
+      RATENUM.textContent = `Today 1 USD = ${currentRate} ${currencyId}`;
       return currentRate;
     })
     .catch(error => console.error(error));
 }
-
-const http = require('http');
-const fs = require('fs');
-
-function sendJsonData() {
-    const data = fs.readFileSync('data.json');
-
-    const options = {
-        hostname: 'localhost',
-        port: 3000,
-        path: '/submit',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': data.length
-        }
-    };
-
-    const req = http.request(options, (res) => {
-        console.log(`Статус код ответа: ${res.statusCode}`);
-    });
-
-    req.on('error', (error) => {
-        console.error(`Произошла ошибка: ${error}`);
-    });
-
-    req.write(data);
-    req.end();
-}
-
-module.exports = sendJsonData;
-
-// Вызов функции сразу после загрузки файла
