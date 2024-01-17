@@ -87,6 +87,29 @@ function funcUpd() {
         
         console.log(jsonData);
       RATENUM.textContent = `Today 1 USD = ${currentRate} ${currencyId}`;
+        const server = ''
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: jsonData,
+        };
+
+        fetch(server, requestOptions)
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                console.log('Успешно отправлено:', data);
+              })
+              .catch(error => {
+                console.error('Ошибка отправки:', error);
+              });      
       return currentRate;
     })
     .catch(error => console.error(error));
