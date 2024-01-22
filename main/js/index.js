@@ -1,6 +1,9 @@
+import { buildGraphFunc } from "./graph.js";
+
 // Function to handle the click event on currency containers
 let counter = 0;
 let currencyId;
+let currentRate;
 
 function handleCurrencyClick(currencyId) {
   counter++;
@@ -58,7 +61,7 @@ document.getElementById("btn-huf").addEventListener("click", function () {
     }
 });
 
-// Rates (string at left corner)
+// Rates (string at the top)
 
 const LINK = 'https://api.exchangerate-api.com/v4/latest/USD';
 function funcUpd() {
@@ -77,6 +80,9 @@ function funcUpd() {
             currentRate = data.rates.HUF;
         }
 
+        const rates = [];
+        const dates = [];
+
         const currentDate = new Date().toISOString().split('T')[0];
 
         const jsonData = JSON.stringify({
@@ -86,8 +92,8 @@ function funcUpd() {
         });
         
         console.log(jsonData);
-      RATENUM.textContent = `Today 1 USD = ${currentRate} ${currencyId}`;
-        const server = ''
+        RATENUM.textContent = `Today 1 USD = ${currentRate} ${currencyId}`;
+        const server = 'http://localhost:3000/data';
 
         const requestOptions = {
             method: 'POST',
@@ -106,11 +112,16 @@ function funcUpd() {
             })
             .then(data => {
                 console.log('Успешно отправлено:', data);
+                data.forEach(item => {
+                    rates.push(item.current_rate);
+                    dates.push(item.date);
+                })
+                buildGraphFunc(rates, dates,  RATENUM.parentElement);
               })
               .catch(error => {
                 console.error('Ошибка отправки:', error);
-              });      
-      return currentRate;
+              });
+        return currentRate;
     })
     .catch(error => console.error(error));
 }
