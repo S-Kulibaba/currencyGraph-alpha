@@ -1,6 +1,5 @@
 import { buildGraphFunc } from "./graph.js";
 
-// Function to handle the click event on currency containers
 let counter = 0;
 let currencyId;
 let currentRate;
@@ -8,28 +7,25 @@ let currentRate;
 function handleCurrencyClick(currencyId) {
   counter++;
 
-  // Create a new container element
   const newContainer = document.createElement("div");
-  newContainer.classList.add("container-for-graph"); // Add CSS class for styling
+  newContainer.classList.add("container-for-graph");
   
-  // Append the new container to the body
   document.body.appendChild(newContainer);
 
-  // Trigger a reflow to apply the initial styles before animating
-  newContainer.offsetWidth; // This forces the browser to redraw
 
-  // Add a class to start the animation
+  newContainer.offsetWidth; 
+
   newContainer.classList.add("container-for-graph-show");
 
-  const ratesNum = document.createElement("div"); // Создаем вложенный div элемент
-  newContainer.appendChild(ratesNum); // Добавляем вложенный div внутрь newContainer
+  const ratesNum = document.createElement("div");
+  newContainer.appendChild(ratesNum);
   ratesNum.classList.add("rates-num");
   ratesNum.id = "rate-num-curr";
 
   return new Promise(resolve => {
     setTimeout(() => {
       resolve();
-    }, 500); // Здесь устанавливайте подходящую задержку
+    }, 500);
   });
 }
 
@@ -65,7 +61,7 @@ document.getElementById("btn-huf").addEventListener("click", function () {
 
 const LINK = 'https://api.exchangerate-api.com/v4/latest/USD';
 function funcUpd() {
-  const RATENUM = document.getElementById('rate-num-curr'); // Получаем элемент здесь
+  const RATENUM = document.getElementById('rate-num-curr');
 
   return fetch(LINK)
     .then(response => response.json())
