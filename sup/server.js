@@ -35,8 +35,14 @@ app.post('/data', (req, res) => {
     console.log('Recived data: ', requestData);
 
     const query = `
-    INSERT INTO currency_rates (currency_id, current_rate, date)
-    VALUES ($1, $2, $3)
+    WITH cte AS (
+        SELECT currency_id, date
+        FROM currency_rates
+        WHERE currency_id = $1 AND date = $3
+      )
+      INSERT INTO currency_rates (currency_id, current_rate, date)
+      SELECT $1, $2, $3
+      WHERE NOT EXISTS (SELECT 1 FROM cte);      
   `;
 
   const values = [requestData.currencyId, requestData.currentRate, requestData.currentDate];
@@ -74,7 +80,7 @@ db.any(query, currency_id)
     res.status(500).send('Internal Server Error')
   })
 }
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`Server successfully run on port ${port}`);
 });
 

@@ -143,13 +143,30 @@ function sendDataToServer(jsonData, currentRate) {
 }
 
 
-function scheduleUpdate(currencyId) {
+function scheduleUpdateEUR() {
     setInterval(() => {
-        console.log("Let's check it for...", currencyId + "!")
+        console.log("Let's check it for... EUR!")
+        currencyId = 'EUR';
         funcUpd(currencyId);
     }, 3600000);
 }
 
-scheduleUpdate('EUR');
-scheduleUpdate('UAH');
-scheduleUpdate('HUF');
+function scheduleUpdateUAH() {
+    setInterval(() => {
+        console.log("Let's check it for... UAH!")
+        currencyId = 'UAH';
+        funcUpd(currencyId);
+    }, 3600000);
+}
+
+function scheduleUpdateHUF() {
+    setInterval(() => {
+        console.log("Let's check it for... HUF!")
+        currencyId = 'HUF';
+        funcUpd(currencyId);
+    }, 3600000);
+}
+
+scheduleUpdateEUR();
+scheduleUpdateUAH();
+scheduleUpdateHUF();
