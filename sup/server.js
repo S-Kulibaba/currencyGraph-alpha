@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
 const { Pool } = require('pg');
 const pgp = require('pg-promise')();
 
@@ -14,7 +13,7 @@ const pool = new Pool({
     database: 'rates_graph',
     password: '',
     port: 5432,
-  });
+});
 
 const db = pgp({
     database: 'rates_graph',
@@ -24,63 +23,108 @@ const db = pgp({
     host: 'localhost',
 });
 
-let currentId;
-
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/data', (req, res) => {
-    const requestData = req.body;
-    console.log('Recived data: ', requestData);
+function funcUpd(currencyId) {
+    const LINK = 'https://api.exchangerate-api.com/v4/latest/USD';
 
+    fetch(LINK)
+        .then(response => response.json())
+        .then(data => {
+            let currentRate;
+            if (currencyId === "EUR") {
+                currentRate = data.rates.EUR;
+            } else if (currencyId === "UAH") {
+                currentRate = data.rates.UAH;
+            } else if (currencyId === "HUF") {
+                currentRate = data.rates.HUF;
+            }
+
+            const currentDate = new Date().toISOString().split('T')[0];
+
+            const jsonData = {
+                currencyId,
+                currentRate,
+                currentDate
+            };
+
+            console.log(jsonData);
+
+            checkData(jsonData);
+        })
+        .catch(error => console.error(error));
+}
+
+function checkData(data) {
     const query = `
     WITH cte AS (
         SELECT currency_id, date
         FROM currency_rates
         WHERE currency_id = $1 AND date = $3
-      )
-      INSERT INTO currency_rates (currency_id, current_rate, date)
-      SELECT $1, $2, $3
-      WHERE NOT EXISTS (SELECT 1 FROM cte);      
-  `;
+    )
+    INSERT INTO currency_rates (currency_id, current_rate, date)
+    SELECT $1, $2, $3
+    WHERE NOT EXISTS (SELECT 1 FROM cte);      
+    `;
 
-  const values = [requestData.currencyId, requestData.currentRate, requestData.currentDate];
+    const values = [data.currencyId, data.currentRate, data.currentDate];
 
-pool.query(query, values, (error, result) => {
-    if (error) {
-        console.error('Error inserting data into PostgreSQL:', error);
-        res.status(500).send('Internal Server Error');
-        return;
-    } else {
-        console.log('Data inserted into PostgreSQL successfully:', result);
-        currentId = requestData.currencyId;
-        getData(currentId, res);
-    }
-  });
-}); 
+    pool.query(query, values, (error, result) => {
+        if (error) {
+            console.error('Error inserting data into PostgreSQL:', error);
+        } else {
+            console.log('Data inserted into PostgreSQL successfully:', result);
+        }
+    });
+}
 
 function getData(currency_id, res) {
-const query = 'SELECT * FROM currency_rates WHERE currency_id = $1 ORDER BY date ASC';
+    const query = 'SELECT * FROM currency_rates WHERE currency_id = $1 ORDER BY date ASC';
 
-db.any(query, currency_id)
-  .then(data => {
-    data.forEach(item => {
-        const dateObject = new Date(item.date);
-        item.date = dateObject.toISOString().split('T')[0];
-    })
+    db.any(query, currency_id)
+        .then(data => {
+            data.forEach(item => {
+                const dateObject = new Date(item.date);
+                item.date = dateObject.toISOString().split('T')[0];
+            });
 
-    data.forEach(item => delete item.id);
+            data.forEach(item => delete item.id);
 
-    const jsonData = JSON.stringify(data, null, 2);
-    res.json(data);
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    res.status(500).send('Internal Server Error')
-  })
+            res.json(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            res.status(500).send('Internal Server Error')
+        });
 }
-app.listen(port, '0.0.0.0', () => {
-    console.log(`Server successfully run on port ${port}`);
+
+app.post('/data', async (req, res) => {
+    try {
+        const requestData = req.body;
+        console.log('Received data:', requestData);
+
+        await checkData(requestData);
+        getData(requestData.currencyId, res);
+    } catch (error) {
+        console.error('Error processing data:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
+
+setInterval(() => {
+    funcUpd("EUR");
+}, 3600000);
+setInterval(() => {
+    funcUpd("UAH");
+}, 3600000);
+setInterval(() => {
+    funcUpd("HUF");
+}, 3600000);
+
+// Запуск сервера
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Server successfully running on port ${port}`);
+});
