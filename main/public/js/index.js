@@ -144,7 +144,7 @@ function sendDataToServer(jsonData, currentRate) {
 }
 
 function scheduleUpdate(currencyId) {
-    const job = new cron.CronJob('0 * * * *', function() {
+    const job = new CronJob('0 * * * *', function() {
         console.log("Let's check it for...", currencyId + "!");
         funcUpd(currencyId);
     });
