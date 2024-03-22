@@ -1,4 +1,5 @@
 import { buildGraphFunc } from "./graph.js";
+import { CronJob } from 'cron';
 
 const LINK = 'https://api.exchangerate-api.com/v4/latest/USD';
 
@@ -142,12 +143,12 @@ function sendDataToServer(jsonData, currentRate) {
     return currentRate;
 }
 
-
 function scheduleUpdate(currencyId) {
-    setInterval(() => {
-        console.log("Let's check it for...", currencyId + "!")
+    const job = new cron.CronJob('0 * * * *', function() {
+        console.log("Let's check it for...", currencyId + "!");
         funcUpd(currencyId);
-    }, 3600000);
+    });
+    job.start();
 }
 
 scheduleUpdate('EUR');
