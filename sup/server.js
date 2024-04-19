@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Pool } = require('pg');
 const pgp = require('pg-promise')();
+const cron = require('node-cron');
 
 const app = express();
 const port = 3000;
@@ -114,17 +115,14 @@ app.post('/data', async (req, res) => {
 });
 
 
-setInterval(() => {
+const job = cron.schedule('*/1 * * * *', function() {
     funcUpd("EUR");
-}, 3600000);
-setInterval(() => {
     funcUpd("UAH");
-}, 3600000);
-setInterval(() => {
     funcUpd("HUF");
-}, 3600000);
+    console.log("Let's check it for...", "!");
+});
+job.start();
 
-// Запуск сервера
 app.listen(port, '0.0.0.0', () => {
     console.log(`Server successfully running on port ${port}`);
 });

@@ -142,15 +142,3 @@ function sendDataToServer(jsonData, currentRate) {
           });
     return currentRate;
 }
-
-function scheduleUpdate(currencyId) {
-    const job = new CronJob('0 * * * *', function() {
-        console.log("Let's check it for...", currencyId + "!");
-        funcUpd(currencyId);
-    });
-    job.start();
-}
-
-scheduleUpdate('EUR');
-scheduleUpdate('UAH');
-scheduleUpdate('HUF');
