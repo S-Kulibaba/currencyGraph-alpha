@@ -1,5 +1,4 @@
 import { buildGraphFunc } from "./graph.js";
-import { CronJob } from 'cron';
 
 const LINK = 'https://api.exchangerate-api.com/v4/latest/USD';
 
